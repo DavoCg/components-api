@@ -1,6 +1,7 @@
 var components = require('adotcomponents');
 var elasticsearch = require('elasticsearch');
 var formatter = require('./es-formatter');
+var queries = require('./es-queries');
 
 module.exports = components.define({
     name: 'database',
@@ -12,7 +13,6 @@ module.exports = components.define({
     },
 
     addElement: function addElement(options, done){
-        this.info('opts', options);
         if(!options.index || !options.type || !options.body){
             return done(new Error('Invalid options'));
         }
@@ -31,11 +31,7 @@ module.exports = components.define({
         this.client.search({
             index: options.index,
             type: options.type,
-            body: {
-                query: {
-                    match_all: {}
-                }
-            }
+            body: queries.all
         }, function(err, response){
             if(err) return done(err);
             return done(null, formatter.formatSearch(response))
